@@ -3,6 +3,8 @@
 URL="https://github.com/jnordberg/gif.js"
 TMP="./dist/tmp"
 
+set -x
+
 if [ -f ./node_modules/.bin/cjsify ]; then
   VERSION=`./bin/version`
   echo "Packaging gif.js $VERSION"
@@ -24,6 +26,15 @@ if [ -f ./node_modules/.bin/cjsify ]; then
     --minify \
     gif.worker.coffee
   echo -e "\n// gif.worker.js $VERSION - $URL" >> ./dist/gif.worker.js
+  ./node_modules/.bin/cjsify \
+    --export GIFEncoder \
+    --root ./src/ \
+    --no-node \
+    --source-map ./dist/libgif.js.map \
+    --output ./dist/libgif.js \
+    --inline-sources \
+    GIFEncoder.js
+  echo -e "\n// libgif.js $VERSION - $URL" >> ./dist/libgif.js
   exit $?
 else
   echo "Dependencies missing. Run npm install"
